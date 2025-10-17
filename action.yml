@@ -1,0 +1,28 @@
+# action.yml
+name: 'amplify-get-outputs'
+description: 'Gets some outputs from an Amplify deployment.'
+inputs:
+  app-id:
+    description: 'The ID of the Amplify app.'
+    required: true
+    default: ''
+  env-name:
+    description: 'The env of the backend.'
+    required: true
+    default: ''
+outputs:
+  graphql_endpoint:
+    description: 'The GraphQL endpoint.'
+  user_pool_id:
+    description: 'The user pool ID.'
+  user_pool_arn:
+    description: 'The user pool ARN.'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.app-id }}
+    - ${{ inputs.env-name }}
+branding:
+  icon: 'check-circle'
+  color: 'orange'
