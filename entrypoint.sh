@@ -40,6 +40,7 @@ get_user_pool_id () {
     userPoolId=$(aws amplifybackend get-backend --app-id "$APP_ID" --backend-environment-name "$ENV_NAME" | jq -r ".AmplifyMetaConfig" | jq -r ".auth" | jq -r ".[keys[0]].output.UserPoolId")
     exit_status=$?
     echo $(strip_white_space "$userPoolId")
+    echo "Got API ID $userPoolId" >&2
     return $exit_status
 }
 
@@ -49,6 +50,7 @@ get_appsync_id () {
     apiId=$(aws amplifybackend get-backend --app-id dlkp8fs0a5r7s --backend-environment-name jobye | jq -r ".AmplifyMetaConfig" | jq -r ".api" | jq -r ".[keys[0]].output.GraphQLAPIIdOutput")
     exit_status=$?
     echo $(strip_white_space "$apiId")
+    echo "Got API id $apiId" >&2
     return $exit_status
 }
 
@@ -58,6 +60,7 @@ get_user_pool_arn () {
     userPoolArn=$(aws amplifybackend get-backend --app-id "$APP_ID" --backend-environment-name "$ENV_NAME" | jq -r ".AmplifyMetaConfig" | jq -r ".auth" | jq -r ".[keys[0]].output.UserPoolArn")
     exit_status=$?
     echo $(strip_white_space "$userPoolArn")
+    echo "Got pool ARN $userPoolArn" >&2
     return $exit_status
 }
 
@@ -67,6 +70,7 @@ get_bucket () {
     bucket=$(aws amplifybackend get-backend --app-id "$APP_ID" --backend-environment-name "$ENV_NAME" | jq -r ".AmplifyMetaConfig" | jq -r ".storage" | jq -r ".[keys[0]].output.BucketName")
     exit_status=$?
     echo $(strip_white_space "$bucket")
+    echo "Got bucket $bucket" >&2
     return $exit_status
 }
 
@@ -77,6 +81,7 @@ get_backend_graphql_endpoint () {
     endpoint=$(aws amplifybackend get-backend --app-id "$APP_ID" --backend-environment-name "$ENV_NAME" | jq -r ".AmplifyMetaConfig" | jq -r ".api.platelet.output.GraphQLAPIEndpointOutput")
     exit_status=$?
     echo $(strip_white_space "$endpoint")
+    echo "Got endpoint $endpoint" >&2
     return $exit_status
 }
 
