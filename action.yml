@@ -19,6 +19,8 @@ outputs:
     description: 'The user pool ARN.'
   appsync_id:
     description: 'The appsync ID.'
+  bucket_name:
+    description: 'The bucket.'
 runs:
   using: 'docker'
   image: 'Dockerfile'

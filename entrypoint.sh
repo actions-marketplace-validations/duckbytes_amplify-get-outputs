@@ -47,7 +47,7 @@ get_user_pool_id () {
 get_appsync_id () {
     local apiId;
     echo "Getting api ID" >&2
-    apiId=$(aws amplifybackend get-backend --app-id dlkp8fs0a5r7s --backend-environment-name jobye | jq -r ".AmplifyMetaConfig" | jq -r ".api" | jq -r ".[keys[0]].output.GraphQLAPIIdOutput")
+    apiId=$(aws amplifybackend get-backend --app-id "$APP_ID" --backend-environment-name "$ENV_NAME" | jq -r ".AmplifyMetaConfig" | jq -r ".api" | jq -r ".[keys[0]].output.GraphQLAPIIdOutput")
     exit_status=$?
     echo $(strip_white_space "$apiId")
     echo "Got API id $apiId" >&2
@@ -102,7 +102,7 @@ write_output () {
     echo "graphql_endpoint=$graphql_endpoint" >> $GITHUB_OUTPUT
     echo "user_pool_id=$user_pool_id" >> $GITHUB_OUTPUT
     echo "user_pool_arn=$user_pool_arn" >> $GITHUB_OUTPUT
-    echo "bucket=$bucket" >> $GITHUB_OUTPUT
+    echo "bucket_name=$bucket" >> $GITHUB_OUTPUT
     echo "appsync_id=$appsync_id" >> $GITHUB_OUTPUT
 
 }
