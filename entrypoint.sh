@@ -15,7 +15,7 @@ if [[ -z "$AWS_SECRET_ACCESS_KEY" ]]; then
   exit 1
 fi
 
-if [[ -z "$AWS_DEFAULT_REGION" ]] ; then
+if [[ -z "$AWS_REGION" ]] ; then
   echo "You must provide the AWS_REGION environment variable."
   exit 1
 fi
