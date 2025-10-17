@@ -1,60 +1,30 @@
-# amplify-build-status
+# amplify-get-outputs
 
-amplify-build-status is a GitHub action to check the build status of an app on AWS Amplify.
-
-It can also be used to wait until a build is complete before continuing the workflow.
-If the build fails the workflow will fail (unless set otherwise).
+amplify-get-outputs is a GitHub action to get the graphql endpoint, user pool id, user pool arn and bucket from an Amplify deployment.
 
 Example:
 
 ```
 - name: Wait for Amplify to finish remote build
-  uses: duckbytes/amplify-build-status@v2.1
+  uses: duckbytes/amplify-get-outputs@v1.0
   with:
-    app-id: ${{ secrets.AMPLIFY_APP_ID }}
-    branch-name: ${{ github.ref_name }}
-    commit-id: ${{ github.sha }}
-    wait: true
+    app-id: ${{ vars.AMPLIFY_APP_ID }}
+    env-name: ${{ vars.AMPLIFY_ENV_NAME }}
   env:
     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     AWS_REGION: ${{ secrets.AWS_REGION }}
 ```
 
-This step when run on a branch connected to the Amplify console will stop the workflow from continuing until the remote build is complete.
-
-You can access the app ID by going to Amplify on the AWS console:
-
-Open your app on the list, and go to the *Backend environments* tab.
-
-Click on *Edit backend* and copy the appId value.
-
 ### Inputs
 
-`app-id`, `branch-name` and `commit-id` are all required input. You also must set `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_REGION` in your environment variables.
-
-Other inputs are:
-
-- `wait` # Whether or not to wait until the remote build is completed or failed before continuing the workflow (default: false).
-- `timeout` # How long to wait in minutes for the remote build to complete or fail, if `wait` is set (default: 120. 0 is no timeout).
-- `no-fail` # If the remote build fails the script will still use a successful exit status and not interrupt the workflow (default: false).
+`app-id`, `env-name` are required input. You also must set `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_REGION` in your environment variables.
 
 ### Outputs
-- `status` # The build status output according to the AWS CLI.
-- `backend_environment` # The environment name.
 - `graphql_endpoint` # The GraphQL endpoint.
+- `user_pool_id` # The user pool id.
+- `user_pool_arn` # The user pool ARN.
 
 You can access these values later in your workflow like this:
 
-`${{ steps.amplify_status.outputs.environment_name }}`
-
-## Known issues
-
-Sometimes the Amplify console doesn't automatically associate a backend with a new deployment.
-
-Amplify will successfully complete the new build, but it is necessary click `(Edit)` next to "Continuous deploys set up" and set it to the correct backend before the action can return the environment name and GraphQL endpoint.
-
-**only on V1**
-
-If you are connecting a branch to Amplify for the first time, the commit-id may be `HEAD` instead of the commit sha.
-Any subsequent builds triggered by commits will use the actual commit sha.
+`${{ steps.amplify_status.outputs.graphql_endpoint }}`
