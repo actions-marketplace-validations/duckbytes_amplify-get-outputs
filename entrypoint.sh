@@ -40,7 +40,7 @@ get_user_pool_id () {
     userPoolId=$(aws amplifybackend get-backend --app-id "$APP_ID" --backend-environment-name "$ENV_NAME" | jq -r ".AmplifyMetaConfig" | jq -r ".auth" | jq -r ".[keys[0]].output.UserPoolId")
     exit_status=$?
     echo $(strip_white_space "$userPoolId")
-    echo "Got API ID $userPoolId" >&2
+    echo "Got user pool ID $userPoolId" >&2
     return $exit_status
 }
 
