@@ -3,7 +3,8 @@
 set -e
 
 APP_ID=$1
-ENV_NAME=$2
+BRANCH=$2
+ENV_NAME=
 
 if [[ -z "$AWS_ACCESS_KEY_ID" ]]; then
   echo "You must provide the AWS_ACCESS_KEY_ID environment variable."
@@ -25,13 +26,23 @@ if [[ -z "$APP_ID" ]] ; then
   exit 1
 fi
 
-if [[ -z "$ENV_NAME" ]] ; then
-  echo "You must provide the env name."
+if [[ -z "$BRANCH" ]] ; then
+  echo "You must provide the branch name."
   exit 1
 fi
 
 strip_white_space () {
     echo $1 | tr -d " \t\n\r"
+}
+
+get_backend_env_name () {
+    local name;
+    echo "GETING ENV NAME"
+    name=$(aws amplify get-branch --app-id "$APP_ID" --branch-name "$BRANCH" | jq -r ".branch.backendEnvironmentArn" | awk -F"/" '{print (NF>1)? $NF : ""}')
+    exit_status=$?
+    echo "$name"
+    ENV_NAME="$name"
+    return $exit_status
 }
 
 get_user_pool_id () {
@@ -85,6 +96,8 @@ get_backend_graphql_endpoint () {
     return $exit_status
 }
 
+
+
 write_output () {
     local graphql_endpoint;
     local user_pool_id;
@@ -104,7 +117,9 @@ write_output () {
     echo "user_pool_arn=$user_pool_arn" >> $GITHUB_OUTPUT
     echo "bucket_name=$bucket" >> $GITHUB_OUTPUT
     echo "appsync_id=$appsync_id" >> $GITHUB_OUTPUT
+    echo "env_name=$ENV_NAME" >> $GITHUB_OUTPUT
 
 }
 
+get_backend_env_name
 echo $(write_output)

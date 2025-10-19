@@ -6,8 +6,8 @@ inputs:
     description: 'The ID of the Amplify app.'
     required: true
     default: ''
-  env-name:
-    description: 'The env of the backend.'
+  branch-name:
+    description: 'The branch name.'
     required: true
     default: ''
 outputs:
@@ -21,12 +21,14 @@ outputs:
     description: 'The appsync ID.'
   bucket_name:
     description: 'The bucket.'
+  env_name:
+    description: 'The environment name.'
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
     - ${{ inputs.app-id }}
-    - ${{ inputs.env-name }}
+    - ${{ inputs.branch-name }}
 branding:
   icon: 'check-circle'
   color: 'orange'
