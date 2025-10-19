@@ -4,7 +4,7 @@ set -e
 
 APP_ID=$1
 BRANCH=$2
-declare ENV_NAME
+ENV_NAME=
 
 if [[ -z "$AWS_ACCESS_KEY_ID" ]]; then
   echo "You must provide the AWS_ACCESS_KEY_ID environment variable."
