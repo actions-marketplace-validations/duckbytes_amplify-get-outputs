@@ -4,7 +4,7 @@ set -e
 
 APP_ID=$1
 BRANCH=$2
-ENV_NAME=
+declare ENV_NAME
 
 if [[ -z "$AWS_ACCESS_KEY_ID" ]]; then
   echo "You must provide the AWS_ACCESS_KEY_ID environment variable."
@@ -37,7 +37,7 @@ strip_white_space () {
 
 get_backend_env_name () {
     local name;
-    echo "GETING ENV NAME"
+    echo "Getting env name"
     name=$(aws amplify get-branch --app-id "$APP_ID" --branch-name "$BRANCH" | jq -r ".branch.backendEnvironmentArn" | awk -F"/" '{print (NF>1)? $NF : ""}')
     exit_status=$?
     echo "$name"
