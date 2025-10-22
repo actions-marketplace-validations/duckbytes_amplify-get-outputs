@@ -1,29 +1,33 @@
 # amplify-get-outputs
 
-amplify-get-outputs is a GitHub action to get the graphql endpoint, user pool id, user pool arn and bucket from an Amplify deployment.
+amplify-get-outputs is a GitHub action to get the environment name, graphQL endpoint, graphQL ID, user pool ID, user pool ARN and bucket name from a branch connected Amplify deployment.
 
 Example:
 
 ```
-- name: Wait for Amplify to finish remote build
+- name: Get Amplify outputs
   uses: duckbytes/amplify-get-outputs@v1.0
+  id: amplify_status
   with:
     app-id: ${{ vars.AMPLIFY_APP_ID }}
-    env-name: ${{ vars.AMPLIFY_ENV_NAME }}
+    branch-name: ${{ github.ref_name }}
   env:
     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    AWS_REGION: ${{ secrets.AWS_REGION }}
+    AWS_REGION: ${{ vars.AWS_REGION }}
 ```
 
 ### Inputs
 
-`app-id`, `env-name` are required input. You also must set `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_REGION` in your environment variables.
+`app-id`, `branch-name` are required input. You also must set `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_REGION` in your environment variables.
 
 ### Outputs
+- `env_name` # The backend environment name.
 - `graphql_endpoint` # The GraphQL endpoint.
-- `user_pool_id` # The user pool id.
+- `appsync_id` # The AppSync ID.
+- `user_pool_id` # The user pool ID.
 - `user_pool_arn` # The user pool ARN.
+- `bucket_name` # the storage bucket if used.
 
 You can access these values later in your workflow like this:
 

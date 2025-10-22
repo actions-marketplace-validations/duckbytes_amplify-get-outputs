@@ -30,5 +30,5 @@ runs:
     - ${{ inputs.app-id }}
     - ${{ inputs.branch-name }}
 branding:
-  icon: 'check-circle'
-  color: 'orange'
+  icon: 'bar-chart'
+  color: 'purple'
