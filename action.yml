@@ -17,6 +17,8 @@ outputs:
     description: 'The user pool ID.'
   user_pool_arn:
     description: 'The user pool ARN.'
+  client_id:
+    description: 'The user pool client ID.'
   appsync_id:
     description: 'The appsync ID.'
   bucket_name:

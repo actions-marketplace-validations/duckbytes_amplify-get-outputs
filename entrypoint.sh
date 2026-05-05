@@ -75,6 +75,16 @@ get_user_pool_arn () {
     return $exit_status
 }
 
+get_user_pool_client_id () {
+    local clientId;
+    echo "Getting client ID" >&2
+    clientId=$(aws amplifybackend get-backend --app-id "$APP_ID" --backend-environment-name "$ENV_NAME" | jq -r ".AmplifyMetaConfig" | jq -r ".auth" | jq -r ".[keys[0]].output.AppClientID")
+    exit_status=$?
+    echo $(strip_white_space "$clientId")
+    echo "Got pool client ID $clientId" >&2
+    return $exit_status
+}
+
 get_bucket () {
     local bucket;
     echo "Getting user bucket" >&2
@@ -107,14 +117,17 @@ write_output () {
     user_pool_arn=$(get_user_pool_arn)
     bucket=$(get_bucket)
     appsync_id=$(get_appsync_id)
+    client_id=$(get_user_pool_client_id)
     echo "Found graphql endpoint: $graphql_endpoint"
     echo "Found user pool id: $user_pool_id"
     echo "Found user pool arn: $user_pool_arn"
+    echo "Found user pool clientId: $clientId"
     echo "Found user bucket: $bucket"
     echo "Found appsync ID: $appsync_id"
     echo "graphql_endpoint=$graphql_endpoint" >> $GITHUB_OUTPUT
     echo "user_pool_id=$user_pool_id" >> $GITHUB_OUTPUT
     echo "user_pool_arn=$user_pool_arn" >> $GITHUB_OUTPUT
+    echo "client_id=$client_id" >> $GITHUB_OUTPUT
     echo "bucket_name=$bucket" >> $GITHUB_OUTPUT
     echo "appsync_id=$appsync_id" >> $GITHUB_OUTPUT
     echo "env_name=$ENV_NAME" >> $GITHUB_OUTPUT
