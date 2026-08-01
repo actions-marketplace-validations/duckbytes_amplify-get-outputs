@@ -111,14 +111,32 @@ get_backend_graphql_endpoint () {
     local endpoint;
     local env_name;
     echo "Getting graphql endpoint" >&2
-    endpoint=$(aws amplifybackend get-backend --app-id "$APP_ID" --backend-environment-name "$ENV_NAME" | jq -r ".AmplifyMetaConfig" | jq -r ".api.platelet.output.GraphQLAPIEndpointOutput")
+    endpoint=$(echo "$AWS_CLI_OUTPUT" | jq -r ".AmplifyMetaConfig" | jq -r ".api.platelet.output.GraphQLAPIEndpointOutput")
     exit_status=$?
     echo $(strip_white_space "$endpoint")
     echo "Got endpoint $endpoint" >&2
     return $exit_status
 }
 
+get_stack_name () {
+    local stackname;
+    echo "Getting stack name" >&2
+    stackname=$(echo "$AWS_CLI_OUTPUT" | jq -r ".AmplifyMetaConfig" | jq -r ".providers.awscloudformation.StackName")
+    exit_status=$?
+    echo $(strip_white_space "$stackname")
+    echo "Got stackname $stackname" >&2
+    return $exit_status
+}
 
+get_deployment_bucket_name () {
+    local deploymentbucket;
+    echo "Getting deployment bucket name" >&2
+    deploymentbucket=$(echo "$AWS_CLI_OUTPUT" | jq -r ".AmplifyMetaConfig" | jq -r ".providers.awscloudformation.DeploymentBucketName")
+    exit_status=$?
+    echo $(strip_white_space "$deploymentbucket")
+    echo "Got deployment bucket $deploymentbucket" >&2
+    return $exit_status
+}
 
 write_output () {
     local graphql_endpoint;
@@ -130,12 +148,16 @@ write_output () {
     bucket=$(get_bucket)
     appsync_id=$(get_appsync_id)
     client_id=$(get_user_pool_client_id)
+    stack_name=$(get_stack_name)
+    deployment_bucket_name=$(get_deployment_bucket_name)
     echo "Found graphql endpoint: $graphql_endpoint"
     echo "Found user pool id: $user_pool_id"
     echo "Found user pool arn: $user_pool_arn"
     echo "Found user pool clientId: $client_id"
     echo "Found user bucket: $bucket"
     echo "Found appsync ID: $appsync_id"
+    echo "Found stack name: $stack_name"
+    echo "Found deployment bucket: $deployment_bucket_name"
     echo "graphql_endpoint=$graphql_endpoint" >> $GITHUB_OUTPUT
     echo "user_pool_id=$user_pool_id" >> $GITHUB_OUTPUT
     echo "user_pool_arn=$user_pool_arn" >> $GITHUB_OUTPUT
@@ -143,7 +165,8 @@ write_output () {
     echo "bucket_name=$bucket" >> $GITHUB_OUTPUT
     echo "appsync_id=$appsync_id" >> $GITHUB_OUTPUT
     echo "env_name=$ENV_NAME" >> $GITHUB_OUTPUT
-
+    echo "stack_name=$stack_name" >> $GITHUB_OUTPUT
+    echo "deployment_bucket_name=$deployment_bucket_name" >> $GITHUB_OUTPUT
 }
 
 get_backend_env_name

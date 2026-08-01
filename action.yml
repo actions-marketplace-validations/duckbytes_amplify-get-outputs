@@ -25,6 +25,10 @@ outputs:
     description: 'The bucket.'
   env_name:
     description: 'The environment name.'
+  stack_name:
+    description: 'The cloudformation stack name.'
+  deployment_bucket_name:
+    description: 'The deployment bucket name.'
 runs:
   using: 'docker'
   image: 'Dockerfile'
