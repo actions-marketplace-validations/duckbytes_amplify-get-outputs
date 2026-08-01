@@ -6,7 +6,7 @@ Example:
 
 ```
 - name: Get Amplify outputs
-  uses: duckbytes/amplify-get-outputs@v1.0
+  uses: duckbytes/amplify-get-outputs@v1.1
   id: amplify_status
   with:
     app-id: ${{ vars.AMPLIFY_APP_ID }}
