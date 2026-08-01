@@ -121,7 +121,7 @@ get_backend_graphql_endpoint () {
 get_stack_name () {
     local stackname;
     echo "Getting stack name" >&2
-    stackname=$(echo "$AWS_CLI_OUTPUT" | jq -r ".AmplifyMetaConfig" | jq -r ".providers.awscloudformation.StackName")
+    stackname=$(echo "$AWS_CLI_OUTPUT" | jq -r ".AmplifyMetaConfig" | jq -er ".providers.awscloudformation.StackName")
     exit_status=$?
     echo $(strip_white_space "$stackname")
     echo "Got stackname $stackname" >&2
@@ -131,7 +131,7 @@ get_stack_name () {
 get_deployment_bucket_name () {
     local deploymentbucket;
     echo "Getting deployment bucket name" >&2
-    deploymentbucket=$(echo "$AWS_CLI_OUTPUT" | jq -r ".AmplifyMetaConfig" | jq -r ".providers.awscloudformation.DeploymentBucketName")
+    deploymentbucket=$(echo "$AWS_CLI_OUTPUT" | jq -r ".AmplifyMetaConfig" | jq -er ".providers.awscloudformation.DeploymentBucketName")
     exit_status=$?
     echo $(strip_white_space "$deploymentbucket")
     echo "Got deployment bucket $deploymentbucket" >&2
