@@ -5,6 +5,7 @@ set -e
 APP_ID=$1
 BRANCH=$2
 ENV_NAME=
+AWS_CLI_OUTPUT=
 
 if [[ -z "$AWS_ACCESS_KEY_ID" ]]; then
   echo "You must provide the AWS_ACCESS_KEY_ID environment variable."
@@ -37,18 +38,29 @@ strip_white_space () {
 
 get_backend_env_name () {
     local name;
+    local aws_output;
     echo "Getting env name"
-    name=$(aws amplify get-branch --app-id "$APP_ID" --branch-name "$BRANCH" | jq -r ".branch.backendEnvironmentArn" | awk -F"/" '{print (NF>1)? $NF : ""}')
+    aws_output=$(aws amplify get-branch --app-id "$APP_ID" --branch-name "$BRANCH")
     exit_status=$?
+    name=$(echo "$aws_output" | jq -r ".branch.backendEnvironmentArn" | awk -F"/" '{print (NF>1)? $NF : ""}')
     echo "$name"
     ENV_NAME="$name"
+    return $exit_status
+}
+
+get_cli_output () {
+    local output;
+    echo "Getting backend..."
+    output=$(aws amplifybackend get-backend --app-id "$APP_ID" --backend-environment-name "$ENV_NAME")
+    exit_status=$?
+    AWS_CLI_OUTPUT="$output"
     return $exit_status
 }
 
 get_user_pool_id () {
     local userPoolId;
     echo "Getting user pool id" >&2
-    userPoolId=$(aws amplifybackend get-backend --app-id "$APP_ID" --backend-environment-name "$ENV_NAME" | jq -r ".AmplifyMetaConfig" | jq -r ".auth" | jq -r ".[keys[0]].output.UserPoolId")
+    userPoolId=$(echo "$AWS_CLI_OUTPUT" | jq -r ".AmplifyMetaConfig" | jq -r ".auth" | jq -r ".[keys[0]].output.UserPoolId")
     exit_status=$?
     echo $(strip_white_space "$userPoolId")
     echo "Got user pool ID $userPoolId" >&2
@@ -58,7 +70,7 @@ get_user_pool_id () {
 get_appsync_id () {
     local apiId;
     echo "Getting api ID" >&2
-    apiId=$(aws amplifybackend get-backend --app-id "$APP_ID" --backend-environment-name "$ENV_NAME" | jq -r ".AmplifyMetaConfig" | jq -r ".api" | jq -r ".[keys[0]].output.GraphQLAPIIdOutput")
+    apiId=$(echo "$AWS_CLI_OUTPUT" | jq -r ".AmplifyMetaConfig" | jq -r ".api" | jq -r ".[keys[0]].output.GraphQLAPIIdOutput")
     exit_status=$?
     echo $(strip_white_space "$apiId")
     echo "Got API id $apiId" >&2
@@ -68,7 +80,7 @@ get_appsync_id () {
 get_user_pool_arn () {
     local userPoolArn;
     echo "Getting user pool arn" >&2
-    userPoolArn=$(aws amplifybackend get-backend --app-id "$APP_ID" --backend-environment-name "$ENV_NAME" | jq -r ".AmplifyMetaConfig" | jq -r ".auth" | jq -r ".[keys[0]].output.UserPoolArn")
+    userPoolArn=$(echo "$AWS_CLI_OUTPUT" | jq -r ".AmplifyMetaConfig" | jq -r ".auth" | jq -r ".[keys[0]].output.UserPoolArn")
     exit_status=$?
     echo $(strip_white_space "$userPoolArn")
     echo "Got pool ARN $userPoolArn" >&2
@@ -78,7 +90,7 @@ get_user_pool_arn () {
 get_user_pool_client_id () {
     local clientId;
     echo "Getting client ID" >&2
-    clientId=$(aws amplifybackend get-backend --app-id "$APP_ID" --backend-environment-name "$ENV_NAME" | jq -r ".AmplifyMetaConfig" | jq -r ".auth" | jq -r ".[keys[0]].output.AppClientID")
+    clientId=$(echo "$AWS_CLI_OUTPUT" | jq -r ".AmplifyMetaConfig" | jq -r ".auth" | jq -r ".[keys[0]].output.AppClientID")
     exit_status=$?
     echo $(strip_white_space "$clientId")
     echo "Got pool client ID $clientId" >&2
@@ -88,7 +100,7 @@ get_user_pool_client_id () {
 get_bucket () {
     local bucket;
     echo "Getting user bucket" >&2
-    bucket=$(aws amplifybackend get-backend --app-id "$APP_ID" --backend-environment-name "$ENV_NAME" | jq -r ".AmplifyMetaConfig" | jq -r ".storage" | jq -r ".[keys[0]].output.BucketName")
+    bucket=$(echo "$AWS_CLI_OUTPUT" | jq -r ".AmplifyMetaConfig" | jq -r ".storage" | jq -r ".[keys[0]].output.BucketName")
     exit_status=$?
     echo $(strip_white_space "$bucket")
     echo "Got bucket $bucket" >&2
@@ -121,7 +133,7 @@ write_output () {
     echo "Found graphql endpoint: $graphql_endpoint"
     echo "Found user pool id: $user_pool_id"
     echo "Found user pool arn: $user_pool_arn"
-    echo "Found user pool clientId: $clientId"
+    echo "Found user pool clientId: $client_id"
     echo "Found user bucket: $bucket"
     echo "Found appsync ID: $appsync_id"
     echo "graphql_endpoint=$graphql_endpoint" >> $GITHUB_OUTPUT
@@ -135,4 +147,5 @@ write_output () {
 }
 
 get_backend_env_name
+get_cli_output
 echo $(write_output)
