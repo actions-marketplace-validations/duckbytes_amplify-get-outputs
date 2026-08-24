@@ -6,7 +6,7 @@ Example:
 
 ```
 - name: Get Amplify outputs
-  uses: duckbytes/amplify-get-outputs@v1.0
+  uses: duckbytes/amplify-get-outputs@v1.1
   id: amplify_status
   with:
     app-id: ${{ vars.AMPLIFY_APP_ID }}
@@ -27,7 +27,9 @@ Example:
 - `appsync_id` # The AppSync ID.
 - `user_pool_id` # The user pool ID.
 - `user_pool_arn` # The user pool ARN.
-- `bucket_name` # the storage bucket if used.
+- `bucket_name` # The storage bucket if used.
+- `stack_name` # The cloudformation stack name.
+- `deployment_bucket_name` # The deployment bucket name.
 
 You can access these values later in your workflow like this:
 
